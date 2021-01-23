@@ -1,12 +1,12 @@
 # Focus Learning: Python Level 1 Cont
 # Shoot Them Circles
 # Kavan Lam
-# Jan 16, 2021
+# Jan 23, 2021
 
 
 # Homework
 """
-1) Make the circles (bad guys) move towards the character  (step 5)
+Your HW is to finish step 6
 """
 
 # Steps
@@ -14,7 +14,8 @@
 # 2) Create the character (for now it will be a sqaure) and making it move using WASD (ensure that it does not leave the screen) [Done]
 # 3) Allow the chracter to shoot. Make a yellow laser. [Done]
 # 4) Spawn the circles (bad guys) [Done]
-# 5) Make the circles (bad guys) move towards the character [HOMEWORK]
+# 5) Make the circles (bad guys) move towards the character [Done]
+# 6) The circles should die when I click on them
 
 character_size = 100
 character_x = 400
@@ -49,13 +50,35 @@ def draw():
         temp_y = int(random(100, 800))
         circle_x.append(temp_x)
         circle_y.append(temp_y)
-        circle_spawn_time = 50  # reset the spawn timer
+        circle_spawn_time = 100  # reset the spawn timer
     
     # Draw the circles
     for index in range(0, len(circle_x)):
-        ellipse(circle_x[index], circle_y[index], 35, 35)
+        ellipse(circle_x[index], circle_y[index], 40, 40)
         
     # Move the circles (hint: Use a for loop to loop over the python list for circle info and update the numbers)
+    new_circle_x = []
+    new_circle_y = []
+    for index in range(0, len(circle_x)):
+        x_diff = character_x - circle_x[index]
+        y_diff = character_y - circle_y[index]
+        
+        if x_diff > 0:
+            x_diff = 1
+        elif x_diff < 0:
+            x_diff = -1
+            
+        if y_diff > 0:
+            y_diff = 1
+        elif y_diff < 0:
+            y_diff = -1
+        
+        new_circle_x.append(circle_x[index] + x_diff)
+        new_circle_y.append(circle_y[index] + y_diff)
+    
+    circle_x = new_circle_x
+    circle_y = new_circle_y
+        
         
 def mousePressed():
     global character_x
@@ -66,6 +89,8 @@ def mousePressed():
     stroke(255, 255, 0)
     line(character_x + character_size / 2, character_y + character_size / 2, mouseX, mouseY)
     popStyle()
+    
+    # Detect to see if we hit any circles and remove the dead circles from the game  Step 6
     
 
 def keyPressed():
