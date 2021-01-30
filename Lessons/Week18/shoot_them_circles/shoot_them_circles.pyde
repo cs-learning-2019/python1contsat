@@ -1,13 +1,7 @@
 # Focus Learning: Python Level 1 Cont
 # Shoot Them Circles
 # Kavan Lam
-# Jan 23, 2021
-
-
-# Homework
-"""
-Your HW is to finish step 6
-"""
+# Jan 30, 2021
 
 # Steps
 # 1) Setup the screen  [Done]
@@ -15,12 +9,14 @@ Your HW is to finish step 6
 # 3) Allow the chracter to shoot. Make a yellow laser. [Done]
 # 4) Spawn the circles (bad guys) [Done]
 # 5) Make the circles (bad guys) move towards the character [Done]
-# 6) The circles should die when I click on them
+# 6) The circles should die when I click on them [Done]
+# 7) The character should die when the circles touch it [Done]
 
 character_size = 100
 character_x = 400
 character_y = 400
 character_speed = 10
+character_alive = True
 
 circle_x = []
 circle_y = []
@@ -36,53 +32,62 @@ def draw():
     global circle_x
     global circle_y
     global circle_spawn_time
+    global character_alive
     
     # Clear the screen/previous frame
     background(0, 0, 0)
     
-    # Draw the character
-    rect(character_x, character_y, character_size, character_size)
-    
-    # Spawn a circle
-    circle_spawn_time = circle_spawn_time - 1
-    if circle_spawn_time == 0:
-        temp_x = int(random(100, 800))
-        temp_y = int(random(100, 800))
-        circle_x.append(temp_x)
-        circle_y.append(temp_y)
-        circle_spawn_time = 100  # reset the spawn timer
-    
-    # Draw the circles
-    for index in range(0, len(circle_x)):
-        ellipse(circle_x[index], circle_y[index], 40, 40)
+    if character_alive == True:
+        # Draw the character
+        rect(character_x, character_y, character_size, character_size)
         
-    # Move the circles (hint: Use a for loop to loop over the python list for circle info and update the numbers)
-    new_circle_x = []
-    new_circle_y = []
-    for index in range(0, len(circle_x)):
-        x_diff = character_x - circle_x[index]
-        y_diff = character_y - circle_y[index]
+        # Spawn a circle
+        circle_spawn_time = circle_spawn_time - 1
+        if circle_spawn_time == 0:
+            temp_x = int(random(100, 800))
+            temp_y = int(random(100, 800))
+            circle_x.append(temp_x)
+            circle_y.append(temp_y)
+            circle_spawn_time = 100  # reset the spawn timer
         
-        if x_diff > 0:
-            x_diff = 1
-        elif x_diff < 0:
-            x_diff = -1
+        # Draw the circles
+        for index in range(0, len(circle_x)):
+            ellipse(circle_x[index], circle_y[index], 40, 40)
             
-        if y_diff > 0:
-            y_diff = 1
-        elif y_diff < 0:
-            y_diff = -1
+        # Move the circles
+        new_circle_x = []
+        new_circle_y = []
+        for index in range(0, len(circle_x)):
+            x_diff = character_x + (character_size / 2) - circle_x[index]
+            y_diff = character_y + (character_size / 2) - circle_y[index]
+            
+            if x_diff > 0:
+                x_diff = 1
+            elif x_diff < 0:
+                x_diff = -1
+                
+            if y_diff > 0:
+                y_diff = 1
+            elif y_diff < 0:
+                y_diff = -1
+            
+            new_circle_x.append(circle_x[index] + x_diff)
+            new_circle_y.append(circle_y[index] + y_diff)
         
-        new_circle_x.append(circle_x[index] + x_diff)
-        new_circle_y.append(circle_y[index] + y_diff)
-    
-    circle_x = new_circle_x
-    circle_y = new_circle_y
+        circle_x = new_circle_x
+        circle_y = new_circle_y
+        
+        # Detect if a circle touches our character
+        for index in range(0, len(circle_x)):
+            if circle_x[index] >= character_x and circle_x[index] <= character_x + character_size and circle_y[index] >= character_y and circle_y[index] <= character_y + character_size:
+                character_alive = False
         
         
 def mousePressed():
     global character_x
     global character_y
+    global circle_x
+    global circle_y
     
     # Draw the laser
     pushStyle()
@@ -91,8 +96,19 @@ def mousePressed():
     popStyle()
     
     # Detect to see if we hit any circles and remove the dead circles from the game  Step 6
+    alive_circle_x = []
+    alive_circle_y = []
+    for index in range(0, len(circle_x)):
+        if circle_x[index] - 40 <= mouseX and circle_x[index] + 40 >= mouseX and circle_y[index] - 40 <= mouseY and circle_y[index] + 40 >= mouseY:
+            pass  # Means to do nothing
+        else:
+            alive_circle_x.append(circle_x[index])
+            alive_circle_y.append(circle_y[index])
     
-
+    circle_x = alive_circle_x
+    circle_y = alive_circle_y
+        
+    
 def keyPressed():
     global character_x
     global character_y
